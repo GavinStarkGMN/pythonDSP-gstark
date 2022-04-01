@@ -1,0 +1,5 @@
+1. Only checks the first character
+2. Is the same as 1, but it returns a string instead of a bool
+3. Effectively only checks the last character of the string
+4. Is correct
+5. Would be correct if it was indented correctly
