@@ -24,16 +24,14 @@ def pad(input, size, begin=0):
 # input : numpy array of float32 limited to [-1,1]
 # h: fir numerator coefficients
 def stftFilter(input,h):
-    output = np.zeros(len(input))
-    bfft = np.fft.fft(pad(b, BLKSIZE * 2))
+    output = np.zeros(len(input) + BLKSIZE)
+    bfft = np.fft.fft(b, BLKSIZE * 2)
     # you can implement the block processing however you like, this is just an example
     for i in range(0, len(input), BLKSIZE):
         ''' ************* YOUR CODE HERE ************* '''
-        fft = np.fft.fft(pad(input[i:i+BLKSIZE], BLKSIZE * 2))
-        ifft = np.fft.ifft(fft * bfft)
-        output += pad(ifft.real, len(output), i)
+        fft = np.fft.fft(input[i:i+BLKSIZE], BLKSIZE * 2)
+        output[i:i+BLKSIZE*2] += np.real(np.fft.ifft(fft * bfft))
     return output
-
 
 testfileLengthInSeconds = 30
 t = np.arange(testfileLengthInSeconds*FS)/FS
@@ -41,15 +39,14 @@ t = np.arange(testfileLengthInSeconds*FS)/FS
 inp = sig.chirp(t,1,testfileLengthInSeconds,10000)
 # create an fir filter
 b = sig.firwin(5,.3)
-bfft = np.fft.fft(pad(b, len(inp)))
 
 #process the input via one huge fft arrray
 fftStart = process_time_ns()
 
 ''' ************* YOUR CODE HERE ************* '''
+bfft = np.fft.fft(b, len(inp))
 fft = np.fft.fft(inp)
-ifft = np.fft.ifft(fft * bfft)
-y = ifft.real
+y = np.real(np.fft.ifft(fft * bfft))
 
 fftEnd = process_time_ns()
 fftExecTime = fftEnd - fftStart
